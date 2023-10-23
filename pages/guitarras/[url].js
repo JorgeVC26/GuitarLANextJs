@@ -5,35 +5,36 @@ import styles from "../../styles/guitarras.module.css"
 import Layout from "../../components/layout";
 
 export default function Producto({ guitarra, agregarCarrito }) {
-    if (guitarra) {
+  const [cantidad, setCantidad] = useState(0); // Mover la llamada al hook useState aquí
 
-      const [cantidad, setCantidad] = useState(0)
-      const { nombre, descripcion, imagen, precio } = guitarra.attributes;
+  if (guitarra) {
+    const { nombre, descripcion, imagen, precio } = guitarra.attributes;
   
-      const handleSubmit = e => {
-        e.preventDefault()
+    const handleSubmit = e => {
+      e.preventDefault();
 
-        if(cantidad < 1) {
-          alert ('cantida no valida')
-          return
-        }
-
-        // Construir un objeto
-        const guitarraSeleccionada = {
-          id: guitarra.id,
-          imagen: imagen.data.attributes.url,
-          nombre,
-          precio,
-          cantidad
-        }
-
-        //  Pasando la informacion
-        agregarCarrito(guitarraSeleccionada)
+      if (cantidad < 1) {
+        alert('Cantidad no válida');
+        return;
       }
-      return (
-        <Layout
-            title={`Guitarra ${nombre}`}
-        >
+
+      // Construir un objeto
+      const guitarraSeleccionada = {
+        id: guitarra.id,
+        imagen: imagen.data.attributes.url,
+        nombre,
+        precio,
+        cantidad
+      }
+
+      // Pasando la información
+      agregarCarrito(guitarraSeleccionada);
+    }
+
+    return (
+      <Layout
+        title={`Guitarra ${nombre}`}
+      >
         <div>
           <div className={styles.guitarra}>
             <Image src={imagen.data.attributes.url} width={600} height={400} alt={`Imagen guitarra ${nombre}`} />
@@ -42,15 +43,16 @@ export default function Producto({ guitarra, agregarCarrito }) {
               <p className={styles.descripcion}>{descripcion}</p>
               <p className={styles.precio}>${precio}</p>
 
-              <form 
-              onSubmit={handleSubmit}
-              className={styles.formulario}
+              <form
+                onSubmit={handleSubmit}
+                className={styles.formulario}
               >
                 <label htmlFor="cantidad">Cantidad:</label>
 
-                <select 
-                onChange={e => setCantidad(+e.target.value)}
-                id="cantidad">
+                <select
+                  onChange={e => setCantidad(+e.target.value)}
+                  id="cantidad"
+                >
                   <option value="0">-- Seleccione --</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -60,19 +62,20 @@ export default function Producto({ guitarra, agregarCarrito }) {
                 </select>
 
                 <input
-                    type="submit"
-                    value="Agregar al carrito"
+                  type="submit"
+                  value="Agregar al carrito"
                 />
               </form>
             </div>
           </div>
         </div>
-        </Layout>
-      );
-    } else {
-      return <div>Cargando datos...</div>;
-    }
+      </Layout>
+    );
+  } else {
+    return <div>Cargando datos...</div>;
   }
+}
+
   
   export async function getStaticPaths() {
     const respuesta = await fetch(`${process.env.API_URL}/guitarras`);
